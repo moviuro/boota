@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = File
+Target = boot/*
+
+[Action]
+Description = Ensure that /boot is mounted
+When = PreTransaction
+Exec = @BINDIR@/boota -m check
+AbortOnFail

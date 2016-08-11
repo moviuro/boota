@@ -1,0 +1,80 @@
+#!/bin/sh
+
+__usage () {
+  cat << EOH
+$0 [-h]
+$0 [-d] [-m] install|check|remove
+
+$0 checks that your /boot partition is mounted. It is intended to be used in an alpm-hook(5)
+
+-h
+  display this help text
+
+-d
+  enable debug info
+
+-m
+  try to mount /boot
+
+install
+  puts the necessary file in /boot
+  you should make sure /boot is mounted
+ 
+check
+  checks that /boot is mounted and you can safely run pacman(8) on it
+
+remove
+  remove the necessary file from /boot
+EOH
+}
+
+_mount=0
+
+while getopts ":dhm" "_opt"; do
+  case $_opt in
+    d) set -x ;;
+    h) __usage; exit;;
+    m) _mount=1;;
+  esac
+done
+
+shift "$((OPTIND -1))"
+
+if [ -r /etc/machine-id ]; then
+  _hostname="$(cat /etc/machine-id)"
+else
+  _hostname="$(hostname)"
+fi
+
+case "$1" in
+  install)
+    if ! findmnt /boot >/dev/null 2>&1 && [ "$_mount" -eq 1 ]; then
+      mount /boot || exit $?
+    fi
+    if findmnt /boot >/dev/null 2>&1; then
+      touch "/boot/$_hostname" || exit $?
+    else
+      echo "/boot is not mounted" >&2
+      exit 2
+    fi
+    ;;
+  check)
+    if [ "$_mount" -eq 1 ]; then
+      if ! findmnt /boot >/dev/null 2>&1; then
+        mount /boot
+      fi
+    fi
+    [ -e "/boot/$_hostname" ] || exit $?;;
+  remove)
+    if ! findmnt /boot >/dev/null 2>&1; then
+      mount /boot
+    fi
+    if [ -e "/boot/$_hostname" ]; then
+      rm "/boot/$_hostname" || exit $?
+      exit
+    else
+      echo "Can't find /boot/$_hostname" >&2
+      exit 3
+    fi
+    ;;
+esac
