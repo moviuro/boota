@@ -1,6 +1,7 @@
 PREFIX := /usr/local
 BINDIR := $(PREFIX)/bin
-HOOKSDIR := /etc/pacman.d/hooks
+ETCDIR := /etc
+HOOKSDIR := $(ETCDIR)/pacman.d/hooks
 MANDIR := /usr/share/man
 LICENSEDIR := /usr/share/licenses
 
