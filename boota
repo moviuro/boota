@@ -64,7 +64,7 @@ case "$1" in
         mount /boot
       fi
     fi
-    [ -e "/boot/$_hostname" ] || exit $?;;
+    [ -w "/boot/$_hostname" ] || exit $?;;
   remove)
     if ! findmnt /boot >/dev/null 2>&1; then
       if [ "$_mount" -eq 1 ]; then
