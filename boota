@@ -67,7 +67,9 @@ case "$1" in
     [ -e "/boot/$_hostname" ] || exit $?;;
   remove)
     if ! findmnt /boot >/dev/null 2>&1; then
-      mount /boot
+      if [ "$_mount" -eq 1 ]; then
+        mount /boot
+      fi
     fi
     if [ -e "/boot/$_hostname" ]; then
       rm "/boot/$_hostname" || exit $?
