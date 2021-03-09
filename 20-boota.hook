@@ -2,11 +2,12 @@
 Operation = Install
 Operation = Upgrade
 Operation = Remove
-Type = File
+Type = Path
 Target = boot/*
+Target = usr/lib/modules/*/vmlinuz*
 
 [Action]
 Description = Ensure that /boot is mounted
 When = PreTransaction
-Exec = @BINDIR@/boota -m check
+Exec = /bin/boota -m check
 AbortOnFail
